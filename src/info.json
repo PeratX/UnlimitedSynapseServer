@@ -1,0 +1,9 @@
+{
+  "name": "UnlimitedSynapseServer",
+  "version": "1.0.0",
+  "api": 1,
+  "description": "An extensible socket server.",
+  "author": "PeratX",
+  "main": "us\\server\\UnlimitedSynpaseServer",
+  "order": 0
+}
