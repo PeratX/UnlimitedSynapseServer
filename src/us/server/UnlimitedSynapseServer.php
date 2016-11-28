@@ -15,39 +15,22 @@ namespace us\server;
 
 use sf\console\Logger;
 use sf\module\Module;
-use sf\util\Config;
 
 class UnlimitedSynapseServer extends Module{
-	/** @var Config */
-	private $config;
-
-	private $address;
-	private $port;
 
 	public function load(){
-		@mkdir($this->getDataFolder());
-		$this->config = new Config($this->getDataFolder() . "config.json", Config::JSON, [
-			"address" => "0.0.0.0",
-			"port" => "26666",
-		]);
-		$this->initConfig();
-		Logger::info("UnlimitedSynapseServer is listening on " . $this->getAddress() . ":" . $this->getPort());
+		Logger::info("UnlimitedSynapseServer is loaded.");
 	}
 
 	public function unload(){
 		Logger::info("UnlimitedSynapseServer is unloaded.");
 	}
 
-	public function initConfig(){
-		$this->address = $this->config->get("address", "0.0.0.0");
-		$this->port = (int) $this->config->get("port", "26666");
+	public function registerManager(ServerManager $manager){
+		//TODO
 	}
 
-	public function getAddress() : string {
-		return $this->address;
-	}
-
-	public function getPort() : int{
-		return (int) $this->port;
+	public function getLoader(){
+		return $this->framework->getLoader();
 	}
 }
