@@ -4,6 +4,6 @@
   "api": 1,
   "description": "An extensible socket server.",
   "author": "PeratX",
-  "main": "us\\server\\UnlimitedSynpaseServer",
+  "main": "us\\server\\UnlimitedSynapseServer",
   "order": 0
 }
