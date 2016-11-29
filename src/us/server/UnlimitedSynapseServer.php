@@ -17,15 +17,25 @@ use sf\console\Logger;
 use sf\module\Module;
 
 class UnlimitedSynapseServer extends Module{
+	/** @var UnlimitedSynapseServer */
+	private static $obj = null;
+
 	/** @var ServerManager[] */
 	private $managers;
 
 	public function load(){
+		if(self::$obj === null){
+			self::$obj = $this;
+		}
 		Logger::info("UnlimitedSynapseServer is loaded.");
 	}
 
 	public function unload(){
 		Logger::info("UnlimitedSynapseServer is unloaded.");
+	}
+
+	public static function getInstance() : UnlimitedSynapseServer{
+		return self::$obj;
 	}
 
 	public function registerManager(ServerManager $manager){
