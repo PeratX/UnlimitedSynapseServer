@@ -16,34 +16,33 @@ namespace us\server;
 use us\server\network\packet\DataPacket;
 use us\server\network\protocol\SynapseInterface;
 
-class Client{
+abstract class Client{
 	/** @var SynapseInterface */
 	private $interface;
-	private $ip;
+	private $address;
 	private $port;
 
-	public function __construct(SynapseInterface $interface, $ip, int $port){
+	public function __construct(SynapseInterface $interface, $address, int $port){
 		$this->interface = $interface;
-		$this->ip = $ip;
+		$this->address = $address;
 		$this->port = $port;
 	}
 
-	public function getHash() : string{
-		return $this->ip . ':' . $this->port;
+	public final function getHash() : string{
+		return $this->address . ':' . $this->port;
 	}
 
-	public function handleDataPacket(DataPacket $packet){
-	}
+	public abstract function handleDataPacket(DataPacket $packet);
 
-	public function sendDataPacket(DataPacket $pk){
+	public final function sendDataPacket(DataPacket $pk){
 		$this->interface->putPacket($this, $pk);
 	}
 
-	public function getIp(){
-		return $this->ip;
+	public final function getAddress(){
+		return $this->address;
 	}
 
-	public function getPort() : int{
+	public final function getPort() : int{
 		return $this->port;
 	}
 }

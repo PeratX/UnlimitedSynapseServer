@@ -17,6 +17,8 @@ use sf\console\Logger;
 use sf\module\Module;
 
 class UnlimitedSynapseServer extends Module{
+	/** @var ServerManager[] */
+	private $managers;
 
 	public function load(){
 		Logger::info("UnlimitedSynapseServer is loaded.");
@@ -27,10 +29,15 @@ class UnlimitedSynapseServer extends Module{
 	}
 
 	public function registerManager(ServerManager $manager){
-		//TODO
+		Logger::info("UnlimitedSynapse Interface [" . $manager->getName() . "] is listening on " . $manager->getAddress() . ":" . $manager->getPort());
+		$this->managers[spl_object_hash($manager)] = $manager;
 	}
 
-	public function getLoader(){
-		return $this->framework->getLoader();
+	public function unregisterManager(ServerManager $manager){
+		if(isset($this->managers[spl_object_hash($manager)])){
+			Logger::info("Closing UnlimitedSynapse Interface [" . $manager->getName() . "] ...");
+			$this->managers[spl_object_hash($manager)]->shutdown();
+			unset($this->managers[spl_object_hash($manager)]);
+		}
 	}
 }

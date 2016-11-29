@@ -18,10 +18,10 @@ use sf\console\Logger;
 class SynapseSocket{
 	private $socket;
 
-	public function __construct($port = 10305, $interface = "0.0.0.0"){
+	public function __construct($port = 26666, $interface = "0.0.0.0"){
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 		if(@socket_bind($this->socket, $interface, $port) !== true){
-			Logger::critical("**** FAILED TO BIND TO " . $interface . ":" . $port . "!");
+			Logger::critical("Cannot listen on " . $interface . ":" . $port . "!");
 			Logger::critical("Perhaps a server is already running on that port?");
 			exit(1);
 		}

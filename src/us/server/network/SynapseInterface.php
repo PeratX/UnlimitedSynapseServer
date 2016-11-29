@@ -14,9 +14,10 @@
 namespace us\server\network\protocol;
 
 use sf\console\Logger;
+use sf\Framework;
 use us\server\Client;
 use us\server\network\packet\DataPacket;
-use us\server\UnlimitedSynapseServer;
+use us\server\ServerManager;
 
 class SynapseInterface{
 	private $server;
@@ -29,12 +30,15 @@ class SynapseInterface{
 	/** @var SynapseServer */
 	private $interface;
 
-	public function __construct(UnlimitedSynapseServer $server, $address, int $port){
+	private $clientClass;
+
+	public function __construct(ServerManager $server, $address, int $port, $clientClass){
 		$this->server = $server;
 		$this->address = $address;
 		$this->port = $port;
 		$this->packetPool = new \SplFixedArray(256);
-		$this->interface = new SynapseServer($this, $server->getLoader(), $port, $address);
+		$this->clientClass = $clientClass;
+		$this->interface = new SynapseServer($this, Framework::getInstance()->getLoader(), $port, $address);
 	}
 
 	public function getServer(){
@@ -42,7 +46,7 @@ class SynapseInterface{
 	}
 
 	public function addClient($ip, $port){
-		$this->clients[$ip . ":" . $port] = new Client($this, $ip, $port);
+		$this->clients[$ip . ":" . $port] = new $this->clientClass($this, $ip, $port);
 	}
 
 	public function removeClient(Client $client){
