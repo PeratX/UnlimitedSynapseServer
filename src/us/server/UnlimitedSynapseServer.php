@@ -15,6 +15,7 @@ namespace us\server;
 
 use sf\console\Logger;
 use sf\module\Module;
+use us\server\util\Binary;
 
 class UnlimitedSynapseServer extends Module{
 	/** @var UnlimitedSynapseServer */
@@ -24,6 +25,7 @@ class UnlimitedSynapseServer extends Module{
 	private $managers;
 
 	public function load(){
+		@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));
 		if(self::$obj === null){
 			self::$obj = $this;
 		}
