@@ -17,9 +17,7 @@ use sf\console\Logger;
 use us\server\util\Binary;
 
 class Session{
-
 	private $receiveBuffer = "";
-	private $sendBuffer = "";
 	/** @var SessionManager */
 	private $sessionManager;
 	/** @var resource */
@@ -59,10 +57,6 @@ class Session{
 			if($data != ""){
 				$this->receiveBuffer .= $data;
 			}
-			if($this->sendBuffer != ""){
-				socket_write($this->socket, $this->sendBuffer);
-				$this->sendBuffer = "";
-			}
 			return true;
 		}
 	}
@@ -75,17 +69,37 @@ class Session{
 		@socket_close($this->socket);
 	}
 
-	public function readPacket(){//TODO: check
-		$len = Binary::readLInt(substr($this->receiveBuffer, 0, 4));
-		if(strlen($this->receiveBuffer) >= ($len + 4)){
-			$buffer = substr($this->receiveBuffer, 4, $len);
-			$this->receiveBuffer = substr($this->receiveBuffer, $len + 1);
-			return $buffer;
+	public function readPacket(){
+		$packets = [];
+		if($this->receiveBuffer !== "" && strlen($this->receiveBuffer) > 0){
+			$len = strlen($this->receiveBuffer);
+			$offset = 0;
+			while($offset < $len){
+				if($offset > $len - 4) break;
+				$pkLen = Binary::readInt(substr($this->receiveBuffer, $offset, 4));
+				$offset +=  4;
+
+				if($pkLen <= ($len - $offset)) {
+					$buf = substr($this->receiveBuffer, $offset, $pkLen);
+					$offset += $pkLen;
+
+					$packets[] = $buf;
+				} else {
+					$offset -= 4;
+					break;
+				}
+			}
+			if($offset < $len){
+				$this->receiveBuffer = substr($this->receiveBuffer, $offset);
+			}else{
+				$this->receiveBuffer = "";
+			}
 		}
-		return null;
+
+		return $packets;
 	}
 
 	public function writePacket($data){
-		$this->sendBuffer .= Binary::writeLInt(strlen($data)) . $data;
+		@socket_write($this->socket, Binary::writeInt(strlen($data)) . $data);
 	}
 }

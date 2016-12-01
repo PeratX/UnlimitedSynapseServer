@@ -78,8 +78,10 @@ class SessionManager{
 
 			foreach($this->sessions as $session){
 				if($session->update()){
-					while(($data = $session->readPacket()) !== null){
-						$this->server->pushThreadToMainPacket($session->getHash() . "|" . $data);
+					if(($data = $session->readPacket()) !== null){
+						foreach($data as $pk){
+							$this->server->pushThreadToMainPacket($session->getHash() . "|" . $pk);
+						}
 					}
 				}else{
 					$session->close();
@@ -87,7 +89,7 @@ class SessionManager{
 					unset($this->sessions[$session->getHash()]);
 				}
 			}
-			
+
 			while(strlen($data = $this->server->getExternalClientCloseRequest()) > 0){
 				$this->sessions[$data]->close();
 				unset($this->sessions[$data]);
