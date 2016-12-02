@@ -17,10 +17,10 @@ use sf\console\Logger;
 use sf\Framework;
 use us\server\Client;
 use us\server\network\packet\DataPacket;
-use us\server\ServerManager;
+use us\server\ClientManager;
 
 class SynapseInterface{
-	private $server;
+	private $clientManager;
 	private $address;
 	private $port;
 	/** @var Client[] */
@@ -30,23 +30,20 @@ class SynapseInterface{
 	/** @var SynapseServer */
 	private $interface;
 
-	private $clientClass;
-
-	public function __construct(ServerManager $server, $address, int $port, $clientClass){
-		$this->server = $server;
+	public function __construct(ClientManager $clientManager, $address, int $port){
+		$this->clientManager = $clientManager;
 		$this->address = $address;
 		$this->port = $port;
 		$this->packetPool = new \SplFixedArray(256);
-		$this->clientClass = $clientClass;
 		$this->interface = new SynapseServer($this, Framework::getInstance()->getLoader(), $port, $address);
 	}
 
-	public function getServer(){
-		return $this->server;
+	public function getClientManager(){
+		return $this->clientManager;
 	}
 
 	public function addClient($ip, $port){
-		$this->clients[$ip . ":" . $port] = new $this->clientClass($this, $ip, $port);
+		$this->clients[$ip . ":" . $port] = $this->clientManager->getNewClient($ip, $port);
 	}
 
 	public function removeClient(Client $client){
@@ -74,7 +71,7 @@ class SynapseInterface{
 		}
 		while(strlen($data = $this->interface->getInternalClientCloseRequest()) > 0){
 			$this->clients[$data]->close(Client::CLOSE_REASON_DISCONNECT);
-			$this->server->removeClient($this->clients[$data]);
+			$this->clientManager->removeClient($this->clients[$data]);
 			unset($this->clients[$data]);
 		}
 	}

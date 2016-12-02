@@ -16,7 +16,7 @@ namespace us\server;
 use sf\console\Logger;
 use us\server\network\protocol\SynapseInterface;
 
-abstract class ServerManager{
+abstract class ClientManager{
 	/** @var Client[] */
 	protected $clients;
 
@@ -26,6 +26,8 @@ abstract class ServerManager{
 	protected $address;
 	protected $port;
 
+	protected $clientClass;
+
 	public function __construct($address, int $port, $clientClass){
 		if(!is_a($clientClass, Client::class)){
 			Logger::error($clientClass . " is not extended from " . Client::class);
@@ -33,7 +35,12 @@ abstract class ServerManager{
 		}
 		$this->address = $address;
 		$this->port = $port;
-		$this->interface = new SynapseInterface($this, $address, $port, $clientClass);
+		$this->clientClass = $clientClass;
+		$this->interface = new SynapseInterface($this, $address, $port);
+	}
+
+	public function getNewClient($address, int $port){
+		return new $this->clientClass($this->interface, $address, $port);
 	}
 
 	public final function getInterface() : SynapseInterface{

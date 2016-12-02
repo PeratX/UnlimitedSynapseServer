@@ -21,7 +21,7 @@ class UnlimitedSynapseServer extends Module{
 	/** @var UnlimitedSynapseServer */
 	private static $obj = null;
 
-	/** @var ServerManager[] */
+	/** @var ClientManager[] */
 	private $managers;
 
 	public function load(){
@@ -40,12 +40,12 @@ class UnlimitedSynapseServer extends Module{
 		return self::$obj;
 	}
 
-	public function registerManager(ServerManager $manager){
+	public function registerManager(ClientManager $manager){
 		Logger::info("UnlimitedSynapse Interface [" . $manager->getName() . "] is listening on " . $manager->getAddress() . ":" . $manager->getPort());
 		$this->managers[spl_object_hash($manager)] = $manager;
 	}
 
-	public function unregisterManager(ServerManager $manager){
+	public function unregisterManager(ClientManager $manager){
 		if(isset($this->managers[spl_object_hash($manager)])){
 			Logger::info("Closing UnlimitedSynapse Interface [" . $manager->getName() . "] ...");
 			$this->managers[spl_object_hash($manager)]->shutdown();
