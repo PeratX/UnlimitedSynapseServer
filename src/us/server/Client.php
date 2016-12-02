@@ -17,6 +17,9 @@ use us\server\network\packet\DataPacket;
 use us\server\network\protocol\SynapseInterface;
 
 abstract class Client{
+	const CLOSE_REASON_NONE = 0;
+	const CLOSE_REASON_DISCONNECT = 1;
+
 	/** @var SynapseInterface */
 	private $interface;
 	private $address;
@@ -45,4 +48,6 @@ abstract class Client{
 	public final function getPort() : int{
 		return $this->port;
 	}
+
+	public abstract function close(int $reason = self::CLOSE_REASON_NONE);
 }
